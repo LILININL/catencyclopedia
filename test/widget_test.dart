@@ -1,30 +1,61 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+import 'dart:io';
 
+import 'package:catencyclopedia/locator.dart';
+import 'package:catencyclopedia/presentation/pages/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:catencyclopedia/main.dart';
+import 'package:catencyclopedia/presentation/bloc/cat_bloc.dart';
+import 'package:catencyclopedia/presentation/bloc/cat_state.dart';
+import 'package:catencyclopedia/data/models/cat_image_model.dart';
+import 'package:catencyclopedia/data/models/cat_breed_model.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:mockito/mockito.dart';
+import 'package:path/path.dart' as path;
+import 'test_helper.mocks.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  setUpAll(() async {
+    final tempDir = Directory.systemTemp.createTempSync();
+    Hive.init(path.join(tempDir.path, 'hive_test'));
+    await initLocator();
+  });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  tearDownAll(() async {
+    await Hive.close();
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  testWidgets('HomePage shows loading indicator when state is loading', (WidgetTester tester) async {
+    final mockBloc = MockCatBloc();
+    when(mockBloc.state).thenReturn(CatState(isLoading: true));
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: BlocProvider<CatBloc>.value(value: mockBloc, child: const HomePage()),
+      ),
+    );
+
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+  });
+
+  testWidgets('HomePage shows ListView with breeds when images loaded', (WidgetTester tester) async {
+    final mockBloc = MockCatBloc();
+    final testImages = [
+      CatImageModel(
+        id: 'test',
+        url: 'https://test.jpg',
+        breeds: [CatBreedModel(id: 'beng', name: 'Bengal')],
+      ),
+    ];
+    when(mockBloc.state).thenReturn(CatState(images: testImages));
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: BlocProvider<CatBloc>.value(value: mockBloc, child: const HomePage()),
+      ),
+    );
+
+    expect(find.byType(ListView), findsOneWidget);
+    expect(find.text('Bengal'), findsOneWidget); // OK เพราะ UI ใช้ breed.name
   });
 }

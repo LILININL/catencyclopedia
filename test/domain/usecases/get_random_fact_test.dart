@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:dartz/dartz.dart'; // Add this import
 
 import 'get_random_fact_test.mocks.dart'; // Import same folder
 
@@ -20,9 +21,9 @@ void main() {
   const tFact = 'Cats can jump up to 6 times their length.';
 
   test('should get random fact from the repository', () async {
-    when(mockRepository.getRandomFact()).thenAnswer((_) async => tFact);
+    when(mockRepository.getRandomFact()).thenAnswer((_) async => Right(tFact));
     final result = await useCase();
-    expect(result, tFact);
+    expect(result, Right(tFact));
     verify(mockRepository.getRandomFact());
     verifyNoMoreInteractions(mockRepository);
   });
