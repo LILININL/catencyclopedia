@@ -12,7 +12,7 @@ class CatRepositoryImpl implements CatRepository {
   CatRepositoryImpl(this.dataSource);
 
   @override
-  Future<Either<Failure, List<CatBreedModel>>> getCatImages({int page = 0, int limit = 20, String? breedIds}) async {
+  Future<Either<Failure, List<CatBreedModel>>> getCatImages({int page = 0, int limit = 100, String? breedIds}) async {
     try {
       final images = await dataSource.getCatImages(page: page, limit: limit, breedIds: breedIds);
       return Right(images);
@@ -34,9 +34,10 @@ class CatRepositoryImpl implements CatRepository {
   @override
   Future<Either<Failure, List<CatBreed>>> searchBreeds(String query) async {
     try {
-      final breedModels = await dataSource.searchBreeds(query);
-      final breeds = List<CatBreed>.from(breedModels); 
-      return Right(breeds);
+      final breeds = await dataSource.searchBreedsData(query);
+      // แปลง Breed เป็น CatBreed entity โดยตรง
+      final catBreeds = breeds.map((breed) => CatBreed.fromBreed(breed, '')).toList();
+      return Right(catBreeds);
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
     }

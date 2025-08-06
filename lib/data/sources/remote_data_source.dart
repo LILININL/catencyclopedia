@@ -38,6 +38,20 @@ class RemoteDataSource {
     }
   }
 
+  Future<List<Breed>> searchBreedsData(String query) async {
+    try {
+      final response = await dio.get('https://api.thecatapi.com/v1/breeds/search', queryParameters: {'q': query});
+      if (response.statusCode == 200) {
+        final List<dynamic> json = response.data;
+        return json.map((item) => Breed.fromJson(item)).toList();
+      } else {
+        throw Exception('Failed to search breeds: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Network error: $e');
+    }
+  }
+
   Future<List<CatBreedModel>> searchBreeds(String query) async {
     try {
       final response = await dio.get('https://api.thecatapi.com/v1/breeds/search', queryParameters: {'q': query});

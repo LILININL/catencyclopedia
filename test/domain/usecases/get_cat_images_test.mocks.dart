@@ -6,7 +6,7 @@
 import 'dart:async' as _i4;
 
 import 'package:catencyclopedia/core/error/failures.dart' as _i5;
-import 'package:catencyclopedia/data/models/cat_image_model.dart' as _i6;
+import 'package:catencyclopedia/data/models/cat_breed_model.dart' as _i6;
 import 'package:catencyclopedia/domain/entities/cat_breed.dart' as _i7;
 import 'package:catencyclopedia/domain/repositories/cat_repository.dart' as _i3;
 import 'package:dartz/dartz.dart' as _i2;
@@ -40,9 +40,9 @@ class MockCatRepository extends _i1.Mock implements _i3.CatRepository {
   }
 
   @override
-  _i4.Future<_i2.Either<_i5.Failure, List<_i6.CatImageModel>>> getCatImages({
+  _i4.Future<_i2.Either<_i5.Failure, List<_i6.CatBreedModel>>> getCatImages({
     int? page = 0,
-    int? limit = 20,
+    int? limit = 100,
     String? breedIds,
   }) =>
       (super.noSuchMethod(
@@ -53,9 +53,9 @@ class MockCatRepository extends _i1.Mock implements _i3.CatRepository {
             }),
             returnValue:
                 _i4.Future<
-                  _i2.Either<_i5.Failure, List<_i6.CatImageModel>>
+                  _i2.Either<_i5.Failure, List<_i6.CatBreedModel>>
                 >.value(
-                  _FakeEither_0<_i5.Failure, List<_i6.CatImageModel>>(
+                  _FakeEither_0<_i5.Failure, List<_i6.CatBreedModel>>(
                     this,
                     Invocation.method(#getCatImages, [], {
                       #page: page,
@@ -65,7 +65,7 @@ class MockCatRepository extends _i1.Mock implements _i3.CatRepository {
                   ),
                 ),
           )
-          as _i4.Future<_i2.Either<_i5.Failure, List<_i6.CatImageModel>>>);
+          as _i4.Future<_i2.Either<_i5.Failure, List<_i6.CatBreedModel>>>);
 
   @override
   _i4.Future<_i2.Either<_i5.Failure, String>> getRandomFact() =>
