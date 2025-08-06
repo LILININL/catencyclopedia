@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
-import 'package:catencyclopedia/domain/usecases/get_breed_search.dart';
-import '../../domain/usecases/get_cat_images.dart';
-import '../../domain/usecases/get_random_fact.dart';
+import 'package:catencyclopedia/domain/usecases/cat/get_breed_search.dart';
+import '../../../domain/usecases/cat/get_cat_images.dart';
+import '../../../domain/usecases/cat/get_random_fact.dart';
 import 'cat_event.dart';
 import 'cat_state.dart';
 

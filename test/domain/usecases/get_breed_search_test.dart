@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:catencyclopedia/domain/repositories/cat_repository.dart';
-import 'package:catencyclopedia/domain/usecases/get_breed_search.dart';
+import 'package:catencyclopedia/domain/usecases/cat/get_breed_search.dart';
 import 'package:catencyclopedia/core/error/failures.dart';
 import 'package:dartz/dartz.dart';
 

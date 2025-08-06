@@ -1,8 +1,8 @@
 import 'package:catencyclopedia/core/error/failures.dart';
 import 'package:dartz/dartz.dart';
 // import '../../core/error/failures.dart';
-import '../entities/cat_breed.dart';
-import '../repositories/cat_repository.dart';
+import '../../entities/cat_breed.dart';
+import '../../repositories/cat_repository.dart';
 
 class GetBreedSearch {
   final CatRepository repository;

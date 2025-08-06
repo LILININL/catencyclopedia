@@ -1,4 +1,4 @@
-import 'package:catencyclopedia/presentation/bloc/cat_state.dart';
+import 'package:catencyclopedia/presentation/bloc/get/cat_state.dart';
 import 'package:flutter/material.dart';
 
 class FilterDialog extends StatelessWidget {

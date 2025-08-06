@@ -1,10 +1,13 @@
-import 'package:catencyclopedia/presentation/bloc/cat_event.dart';
+import 'package:catencyclopedia/presentation/bloc/get/cat_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../domain/entities/cat_breed.dart';
-import '../bloc/cat_bloc.dart';
-import '../bloc/cat_state.dart';
+import '../bloc/get/cat_bloc.dart';
+import '../bloc/get/cat_state.dart';
+import '../bloc/favorite/favorite_bloc.dart';
+import '../widgets/favorite_button.dart';
+import '../../locator.dart';
 import 'package:translator/translator.dart';
 
 class DetailPage extends StatefulWidget {
@@ -92,8 +95,8 @@ class _DetailPageState extends State<DetailPage> {
         title: Row(
           children: [
             const Icon(Icons.pets, color: Color(0xFF8D5524)),
-            SizedBox(width: 8),
-            Text(widget.breed!.name, style: const TextStyle(color: Color(0xFF8D5524))),
+            const SizedBox(width: 8),
+            Text(widget.breed?.name ?? 'Unknown', style: const TextStyle(color: Color(0xFF8D5524))),
           ],
         ),
         elevation: 2,
@@ -159,7 +162,7 @@ class _DetailPageState extends State<DetailPage> {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              widget.breed!.name,
+                              widget.breed?.name ?? 'Unknown',
                               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF8D5524)),
                             ),
                           ),
@@ -193,7 +196,7 @@ class _DetailPageState extends State<DetailPage> {
                       isTranslatingDetail
                           ? const LinearProgressIndicator(minHeight: 4)
                           : Text(
-                              showTranslatedAll && translatedTemperament != null ? translatedTemperament! : widget.breed!.temperament!,
+                              showTranslatedAll && translatedTemperament != null ? translatedTemperament! : widget.breed?.temperament ?? 'No temperament info',
                               style: const TextStyle(fontSize: 16, color: Colors.deepOrange),
                             ),
                       const SizedBox(height: 16),
@@ -287,6 +290,10 @@ class _DetailPageState extends State<DetailPage> {
             ),
           ],
         ),
+      ),
+      floatingActionButton: BlocProvider<FavoriteBloc>(
+        create: (_) => sl<FavoriteBloc>(),
+        child: FavoriteFab(catId: widget.breed?.id ?? '', imageUrl: widget.image ?? '', breedName: widget.breed?.name ?? '', breedId: widget.breed?.id),
       ),
     );
   }

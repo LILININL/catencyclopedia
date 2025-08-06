@@ -1,24 +1,30 @@
 import 'package:catencyclopedia/data/models/cat_breed_model.dart';
-import 'package:catencyclopedia/data/sources/remote_data_source.dart';
+import 'package:catencyclopedia/data/sources/local/local_data_source.dart';
+import 'package:catencyclopedia/data/sources/remote/remote_data_source.dart';
+import 'package:catencyclopedia/domain/entities/favorite_cat.dart';
 import 'package:catencyclopedia/domain/repositories/cat_repository_impl.dart';
-import 'package:catencyclopedia/domain/usecases/get_cat_images.dart';
-import 'package:catencyclopedia/domain/usecases/get_random_fact.dart';
-import 'package:catencyclopedia/domain/usecases/get_breed_search.dart';
+import 'package:catencyclopedia/domain/usecases/cat/get_cat_images.dart';
+import 'package:catencyclopedia/domain/usecases/cat/get_random_fact.dart';
+import 'package:catencyclopedia/domain/usecases/cat/get_breed_search.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hive/hive.dart';
 
 void main() {
-  late RemoteDataSource dataSource;
+  late RemoteCatDataSource remoteDataSource;
+  late LocalCatDataSource localDataSource;
   late CatRepositoryImpl repository;
   late GetCatImages getCatImages;
   late GetRandomFact getRandomFact;
   late GetBreedSearch getBreedSearch;
 
-  setUpAll(() {
-    // สร้าง real dependencies สำหรับ integration test
+  setUpAll(() async {
     final dio = Dio();
-    dataSource = RemoteDataSource(dio);
-    repository = CatRepositoryImpl(dataSource);
+    final favoriteCatsBox = await Hive.openBox<FavoriteCat>('favorite_cats_test');
+
+    remoteDataSource = RemoteCatDataSource(dio);
+    localDataSource = LocalCatDataSource(favoriteCatsBox);
+    repository = CatRepositoryImpl(remoteDataSource, localDataSource);
     getCatImages = GetCatImages(repository);
     getRandomFact = GetRandomFact(repository);
     getBreedSearch = GetBreedSearch(repository);
@@ -32,26 +38,23 @@ void main() {
 
         // assert
         expect(result.isRight(), true);
-        result.fold(
-          (failure) => fail('Should not return failure: ${failure.message}'),
-          (images) {
-            expect(images, isA<List<CatBreedModel>>());
-            expect(images.length, greaterThan(0));
-            expect(images.length, lessThanOrEqualTo(5));
-            
-            // ตรวจสอบโครงสร้างข้อมูล
-            final firstImage = images.first;
-            expect(firstImage.id, isNotNull);
-            expect(firstImage.url, isNotNull);
-            expect(firstImage.url, startsWith('https://'));
-            
-            print('✅ Fetched ${images.length} cat images');
-            print('📸 First image URL: ${firstImage.url}');
-            if (firstImage.breeds?.isNotEmpty == true) {
-              print('🐱 First breed: ${firstImage.breeds!.first.name}');
-            }
-          },
-        );
+        result.fold((failure) => fail('Should not return failure: ${failure.message}'), (images) {
+          expect(images, isA<List<CatBreedModel>>());
+          expect(images.length, greaterThan(0));
+          expect(images.length, lessThanOrEqualTo(5));
+
+          // ตรวจสอบโครงสร้างข้อมูล
+          final firstImage = images.first;
+          expect(firstImage.id, isNotNull);
+          expect(firstImage.url, isNotNull);
+          expect(firstImage.url, startsWith('https://'));
+
+          print('✅ Fetched ${images.length} cat images');
+          print('📸 First image URL: ${firstImage.url}');
+          if (firstImage.breeds?.isNotEmpty == true) {
+            print('🐱 First breed: ${firstImage.breeds!.first.name}');
+          }
+        });
       });
 
       test('should fetch images with specific breed ID', () async {
@@ -60,13 +63,10 @@ void main() {
 
         // assert
         expect(result.isRight(), true);
-        result.fold(
-          (failure) => fail('Should not return failure: ${failure.message}'),
-          (images) {
-            expect(images, isA<List<CatBreedModel>>());
-            print('✅ Fetched ${images.length} Bengal cat images');
-          },
-        );
+        result.fold((failure) => fail('Should not return failure: ${failure.message}'), (images) {
+          expect(images, isA<List<CatBreedModel>>());
+          print('✅ Fetched ${images.length} Bengal cat images');
+        });
       });
     });
 
@@ -77,14 +77,11 @@ void main() {
 
         // assert
         expect(result.isRight(), true);
-        result.fold(
-          (failure) => fail('Should not return failure: ${failure.message}'),
-          (fact) {
-            expect(fact, isA<String>());
-            expect(fact.length, greaterThan(10));
-            print('✅ Fetched cat fact: $fact');
-          },
-        );
+        result.fold((failure) => fail('Should not return failure: ${failure.message}'), (fact) {
+          expect(fact, isA<String>());
+          expect(fact.length, greaterThan(10));
+          print('✅ Fetched cat fact: $fact');
+        });
       });
     });
 
@@ -95,16 +92,13 @@ void main() {
 
         // assert
         expect(result.isRight(), true);
-        result.fold(
-          (failure) => fail('Should not return failure: ${failure.message}'),
-          (breeds) {
-            expect(breeds.length, greaterThan(0));
-            final bengalBreed = breeds.first;
-            expect(bengalBreed.name.toLowerCase(), contains('bengal'));
-            print('✅ Found ${breeds.length} breeds matching "Bengal"');
-            print('🐱 First breed: ${bengalBreed.name} from ${bengalBreed.origin}');
-          },
-        );
+        result.fold((failure) => fail('Should not return failure: ${failure.message}'), (breeds) {
+          expect(breeds.length, greaterThan(0));
+          final bengalBreed = breeds.first;
+          expect(bengalBreed.name.toLowerCase(), contains('bengal'));
+          print('✅ Found ${breeds.length} breeds matching "Bengal"');
+          print('🐱 First breed: ${bengalBreed.name} from ${bengalBreed.origin}');
+        });
       });
 
       test('should search for Siamese breed', () async {
@@ -113,16 +107,13 @@ void main() {
 
         // assert
         expect(result.isRight(), true);
-        result.fold(
-          (failure) => fail('Should not return failure: ${failure.message}'),
-          (breeds) {
-            expect(breeds.length, greaterThan(0));
-            final siameseBreed = breeds.first;
-            expect(siameseBreed.name.toLowerCase(), contains('siamese'));
-            print('✅ Found ${breeds.length} breeds matching "Siamese"');
-            print('🐱 First breed: ${siameseBreed.name} from ${siameseBreed.origin}');
-          },
-        );
+        result.fold((failure) => fail('Should not return failure: ${failure.message}'), (breeds) {
+          expect(breeds.length, greaterThan(0));
+          final siameseBreed = breeds.first;
+          expect(siameseBreed.name.toLowerCase(), contains('siamese'));
+          print('✅ Found ${breeds.length} breeds matching "Siamese"');
+          print('🐱 First breed: ${siameseBreed.name} from ${siameseBreed.origin}');
+        });
       });
 
       test('should handle search with no results', () async {
@@ -131,13 +122,10 @@ void main() {
 
         // assert
         expect(result.isRight(), true);
-        result.fold(
-          (failure) => fail('Should not return failure: ${failure.message}'),
-          (breeds) {
-            expect(breeds.length, equals(0));
-            print('✅ No breeds found for non-existent search term');
-          },
-        );
+        result.fold((failure) => fail('Should not return failure: ${failure.message}'), (breeds) {
+          expect(breeds.length, equals(0));
+          print('✅ No breeds found for non-existent search term');
+        });
       });
     });
   });
@@ -145,35 +133,35 @@ void main() {
   group('Data Source Direct Tests', () {
     test('should fetch cat images directly from data source', () async {
       // act
-      final images = await dataSource.getCatImages(limit: 3);
+      final images = await remoteDataSource.getCatImages(limit: 3);
 
       // assert
       expect(images, isA<List<CatBreedModel>>());
       expect(images.length, greaterThan(0));
       expect(images.length, lessThanOrEqualTo(3));
-      
+
       print('✅ Data source fetched ${images.length} images');
     });
 
     test('should fetch random fact directly from data source', () async {
       // act
-      final fact = await dataSource.getRandomFact();
+      final fact = await remoteDataSource.getRandomFact();
 
       // assert
       expect(fact, isA<String>());
       expect(fact.length, greaterThan(5));
-      
+
       print('✅ Data source fetched fact: $fact');
     });
 
     test('should search breeds directly from data source', () async {
       // act
-      final breeds = await dataSource.searchBreeds('Maine');
+      final breeds = await remoteDataSource.searchBreeds('Maine');
 
       // assert
       expect(breeds, isA<List<CatBreedModel>>());
       expect(breeds.length, greaterThan(0));
-      
+
       print('✅ Data source found ${breeds.length} breeds for "Maine"');
     });
   });

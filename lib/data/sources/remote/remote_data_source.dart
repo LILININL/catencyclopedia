@@ -1,19 +1,32 @@
 import 'package:catencyclopedia/data/models/cat_breed_model.dart';
+import 'package:catencyclopedia/core/constants/app_constants.dart';
 import 'package:dio/dio.dart';
 
-class RemoteDataSource {
+class RemoteCatDataSource {
   final Dio dio;
 
-  RemoteDataSource(this.dio) {
-    dio.options.headers['x-api-key'] = 'live_IYRCyeyGLPjd48Jgsk45Aak1mYnqT5LOAS0cAYBXR2iCIaEu0XNVxG3wfhEqgtY9';
+  RemoteCatDataSource(this.dio) {
+    dio.options.headers['x-api-key'] = ApiConstants.apiKey;
   }
-  Future<List<CatBreedModel>> getCatImages({int page = 0, int limit = 100, String? breedIds}) async {
+
+  Future<List<CatBreedModel>> getCatImages({int page = ApiConstants.defaultPage, int limit = ApiConstants.defaultLimit, String? breedIds}) async {
     try {
-      final Map<String, dynamic> queryParameters = {'size': 'med', 'mime_types': 'jpg', 'format': 'json', 'has_breeds': true, 'order': 'RANDOM', 'page': page, 'limit': limit};
+      final Map<String, dynamic> queryParameters = {
+        'size': ApiConstants.imageSize,
+        'mime_types': ApiConstants.mimeTypes,
+        'format': ApiConstants.format,
+        'has_breeds': ApiConstants.hasBreeds,
+        'order': ApiConstants.order,
+        'page': page,
+        'limit': limit,
+      };
+
       if (breedIds != null && breedIds.isNotEmpty) {
         queryParameters['breed_ids'] = breedIds;
       }
-      final response = await dio.get('https://api.thecatapi.com/v1/images/search', queryParameters: queryParameters);
+
+      final response = await dio.get('${ApiConstants.baseUrl}${ApiConstants.imagesEndpoint}', queryParameters: queryParameters);
+
       if (response.statusCode == 200) {
         final List<dynamic> json = response.data;
         return json.map((item) => CatBreedModel.fromJson(item)).toList();

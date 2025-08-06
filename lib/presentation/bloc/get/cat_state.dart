@@ -1,4 +1,4 @@
-import '../../data/models/cat_breed_model.dart';
+import '../../../data/models/cat_breed_model.dart';
 
 class CatState {
   final List<CatBreedModel>? images;

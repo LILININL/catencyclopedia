@@ -1,13 +1,16 @@
 import 'package:catencyclopedia/data/models/cat_breed_model.dart';
 import '../../domain/entities/cat_breed.dart';
-import '../bloc/cat_event.dart';
+import '../bloc/get/cat_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../locator.dart';
-import '../bloc/cat_bloc.dart';
-import '../bloc/cat_state.dart';
+import '../bloc/get/cat_bloc.dart';
+import '../bloc/get/cat_state.dart';
+import '../bloc/favorite/favorite_bloc.dart';
+import '../widgets/favorite_button.dart';
 import 'detail_page.dart';
+import 'favorites_page.dart';
 import '../widgets/filter_dialog.dart';
 
 class HomePage extends StatefulWidget {
@@ -93,6 +96,18 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
               actions: [
+                IconButton(
+                  icon: const Icon(Icons.favorite, color: Colors.red),
+                  tooltip: 'รายการโปรด',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => BlocProvider<FavoriteBloc>(create: (_) => sl<FavoriteBloc>(), child: const FavoritesPage()),
+                      ),
+                    );
+                  },
+                ),
                 IconButton(
                   icon: const Icon(Icons.filter_list),
                   tooltip: 'กรองพันธุ์',
@@ -231,6 +246,15 @@ class _HomePageState extends State<HomePage> {
                                               imageUrl: image.url ?? 'https://placecats.com/200/200',
                                               fit: BoxFit.cover,
                                               errorWidget: (context, url, error) => const Icon(Icons.error),
+                                            ),
+                                            // Favorite Button
+                                            Positioned(
+                                              top: 4,
+                                              right: 4,
+                                              child: BlocProvider<FavoriteBloc>(
+                                                create: (_) => sl<FavoriteBloc>(),
+                                                child: FavoriteButton(catId: image.id ?? '', imageUrl: image.url ?? '', breedName: breedName, breedId: breed?.id, size: 20),
+                                              ),
                                             ),
                                             Align(
                                               alignment: Alignment.bottomRight,

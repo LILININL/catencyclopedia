@@ -6,7 +6,7 @@ import 'package:dartz/dartz.dart'; // Add this import
 import 'get_random_fact_test.mocks.dart'; // Import same folder
 
 import 'package:catencyclopedia/domain/repositories/cat_repository.dart'; // Package path to lib
-import 'package:catencyclopedia/domain/usecases/get_random_fact.dart';
+import 'package:catencyclopedia/domain/usecases/cat/get_random_fact.dart';
 
 @GenerateMocks([CatRepository]) // ต้องมีบรรทัดนี้เพื่อ trigger mockito gen!
 void main() {
