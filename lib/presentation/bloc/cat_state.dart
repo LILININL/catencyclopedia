@@ -1,36 +1,18 @@
-import '../../data/models/cat_image_model.dart';
+import '../../data/models/cat_breed_model.dart';
 
 class CatState {
-  final List<CatImageModel>? images;
+  final List<CatBreedModel>? images;
   final String? fact;
   final bool isLoading;
   final String? error;
   final int currentPage;
   final bool hasReachedMax;
   final String? searchQuery;
-  final String? breedIds; // เพิ่มตรงนี้
+  final String? breedIds;
 
-  CatState({
-    this.images,
-    this.fact,
-    this.isLoading = false,
-    this.error,
-    this.currentPage = 0,
-    this.hasReachedMax = false,
-    this.searchQuery,
-    this.breedIds, // เพิ่ม
-  });
+  CatState({this.images, this.fact, this.isLoading = false, this.error, this.currentPage = 0, this.hasReachedMax = false, this.searchQuery, this.breedIds});
 
-  CatState copyWith({
-    List<CatImageModel>? images,
-    String? fact,
-    bool? isLoading,
-    String? error,
-    int? currentPage,
-    bool? hasReachedMax,
-    String? searchQuery,
-    String? breedIds, // เพิ่ม
-  }) {
+  CatState copyWith({List<CatBreedModel>? images, String? fact, bool? isLoading, String? error, int? currentPage, bool? hasReachedMax, String? searchQuery, String? breedIds}) {
     return CatState(
       images: images ?? this.images,
       fact: fact ?? this.fact,
@@ -39,7 +21,7 @@ class CatState {
       currentPage: currentPage ?? this.currentPage,
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
       searchQuery: searchQuery ?? this.searchQuery,
-      breedIds: breedIds ?? this.breedIds, // เพิ่ม
+      breedIds: breedIds ?? this.breedIds,
     );
   }
 }

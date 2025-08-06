@@ -3,7 +3,6 @@ import 'package:catencyclopedia/data/models/cat_breed_model.dart';
 import 'package:catencyclopedia/domain/entities/cat_breed.dart';
 import 'package:dartz/dartz.dart';
 
-import '../../data/models/cat_image_model.dart';
 import '../../data/sources/remote_data_source.dart';
 import '../../domain/repositories/cat_repository.dart';
 
@@ -13,7 +12,7 @@ class CatRepositoryImpl implements CatRepository {
   CatRepositoryImpl(this.dataSource);
 
   @override
-  Future<Either<Failure, List<CatImageModel>>> getCatImages({int page = 0, int limit = 20, String? breedIds}) async {
+  Future<Either<Failure, List<CatBreedModel>>> getCatImages({int page = 0, int limit = 20, String? breedIds}) async {
     try {
       final images = await dataSource.getCatImages(page: page, limit: limit, breedIds: breedIds);
       return Right(images);
@@ -36,7 +35,7 @@ class CatRepositoryImpl implements CatRepository {
   Future<Either<Failure, List<CatBreed>>> searchBreeds(String query) async {
     try {
       final breedModels = await dataSource.searchBreeds(query);
-      final breeds = List<CatBreed>.from(breedModels); // cast เพราะ CatBreedModel extends CatBreed
+      final breeds = List<CatBreed>.from(breedModels); 
       return Right(breeds);
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));

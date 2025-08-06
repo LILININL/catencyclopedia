@@ -23,5 +23,7 @@ Future<void> initLocator() async {
   sl.registerLazySingleton<GetCatImages>(() => GetCatImages(sl<CatRepository>()));
   sl.registerLazySingleton<GetRandomFact>(() => GetRandomFact(sl<CatRepository>()));
   sl.registerLazySingleton(() => GetBreedSearch(sl<CatRepository>()));
+
+  
   sl.registerFactory<CatBloc>(() => CatBloc(getImages: sl<GetCatImages>(), getFact: sl<GetRandomFact>(), getBreedSearch: sl<GetBreedSearch>()));
 }

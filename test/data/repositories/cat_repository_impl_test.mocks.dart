@@ -50,7 +50,7 @@ class MockRemoteDataSource extends _i1.Mock implements _i3.RemoteDataSource {
   @override
   _i4.Future<List<_i5.CatImageModel>> getCatImages({
     int? page = 0,
-    int? limit = 20,
+    int? limit = 0,
     String? breedIds,
   }) =>
       (super.noSuchMethod(

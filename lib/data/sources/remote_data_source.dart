@@ -1,6 +1,5 @@
 import 'package:catencyclopedia/data/models/cat_breed_model.dart';
 import 'package:dio/dio.dart';
-import '../models/cat_image_model.dart';
 
 class RemoteDataSource {
   final Dio dio;
@@ -8,7 +7,7 @@ class RemoteDataSource {
   RemoteDataSource(this.dio) {
     dio.options.headers['x-api-key'] = 'live_IYRCyeyGLPjd48Jgsk45Aak1mYnqT5LOAS0cAYBXR2iCIaEu0XNVxG3wfhEqgtY9';
   }
-  Future<List<CatImageModel>> getCatImages({int page = 0, int limit = 20, String? breedIds}) async {
+  Future<List<CatBreedModel>> getCatImages({int page = 0, int limit = 100, String? breedIds}) async {
     try {
       final Map<String, dynamic> queryParameters = {'size': 'med', 'mime_types': 'jpg', 'format': 'json', 'has_breeds': true, 'order': 'RANDOM', 'page': page, 'limit': limit};
       if (breedIds != null && breedIds.isNotEmpty) {
@@ -17,7 +16,7 @@ class RemoteDataSource {
       final response = await dio.get('https://api.thecatapi.com/v1/images/search', queryParameters: queryParameters);
       if (response.statusCode == 200) {
         final List<dynamic> json = response.data;
-        return json.map((item) => CatImageModel.fromJson(item)).toList();
+        return json.map((item) => CatBreedModel.fromJson(item)).toList();
       } else {
         throw Exception('Failed to load images: ${response.statusCode}');
       }
