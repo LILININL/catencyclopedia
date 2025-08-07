@@ -1,6 +1,12 @@
-import '../entities/cat_breed.dart';
+import 'package:catencyclopedia/core/error/failures.dart';
+import 'package:catencyclopedia/domain/entities/cat_breed.dart';
+import 'package:catencyclopedia/core/constants/app_constants.dart';
+import 'package:dartz/dartz.dart';
+
+import '../../data/models/cat_breed_model.dart';
 
 abstract class CatRepository {
-  Future<List<CatBreed>> getCatBreeds();
-  Future<String> getRandomFact();
+  Future<Either<Failure, List<CatBreedModel>>> getCatImages({int page = ApiConstants.defaultPage, int limit = ApiConstants.defaultLimit, String? breedIds});
+  Future<Either<Failure, String>> getRandomFact();
+  Future<Either<Failure, List<CatBreed>>> searchBreeds(String query);
 }

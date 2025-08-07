@@ -7,7 +7,6 @@ import 'presentation/pages/home_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
-
   await initLocator();
   runApp(const MyApp());
 }

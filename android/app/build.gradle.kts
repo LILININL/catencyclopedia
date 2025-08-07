@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.catencyclopedia"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 35
     ndkVersion = "27.0.12077973"
 
     compileOptions {
@@ -37,6 +37,7 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+    buildToolsVersion = "35.0.1"
 }
 
 flutter {
