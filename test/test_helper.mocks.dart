@@ -6,9 +6,11 @@
 import 'dart:async' as _i7;
 
 import 'package:bloc/bloc.dart' as _i9;
-import 'package:catencyclopedia/domain/usecases/cat/get_breed_search.dart' as _i4;
+import 'package:catencyclopedia/domain/usecases/cat/get_breed_search.dart'
+    as _i4;
 import 'package:catencyclopedia/domain/usecases/cat/get_cat_images.dart' as _i2;
-import 'package:catencyclopedia/domain/usecases/cat/get_random_fact.dart' as _i3;
+import 'package:catencyclopedia/domain/usecases/cat/get_random_fact.dart'
+    as _i3;
 import 'package:catencyclopedia/presentation/bloc/get/cat_bloc.dart' as _i6;
 import 'package:catencyclopedia/presentation/bloc/get/cat_event.dart' as _i8;
 import 'package:catencyclopedia/presentation/bloc/get/cat_state.dart' as _i5;
