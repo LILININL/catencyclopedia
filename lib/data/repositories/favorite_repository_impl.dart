@@ -21,6 +21,39 @@ class FavoriteRepositoryImpl implements FavoriteRepository {
   }
 
   @override
+  Future<Either<Exception, Unit>> addFavoriteWithBreedData(
+    FavoriteCat favoriteCat, {
+    String? breedDescription,
+    String? origin,
+    String? temperament,
+    String? lifeSpan,
+    String? weight,
+    int? energyLevel,
+    int? sheddingLevel,
+    int? socialNeeds,
+    Map<String, dynamic>? additionalData,
+  }) async {
+    try {
+      final model = FavoriteCatModel.fromEntityWithBreedData(
+        favoriteCat,
+        breedDescription: breedDescription,
+        origin: origin,
+        temperament: temperament,
+        lifeSpan: lifeSpan,
+        weight: weight,
+        energyLevel: energyLevel,
+        sheddingLevel: sheddingLevel,
+        socialNeeds: socialNeeds,
+        additionalData: additionalData,
+      );
+      await localDataSource.addFavorite(model);
+      return const Right(unit);
+    } catch (e) {
+      return Left(Exception('Failed to add favorite with breed data: ${e.toString()}'));
+    }
+  }
+
+  @override
   Future<Either<Exception, Unit>> updateFavorite(FavoriteCat favoriteCat) async {
     try {
       final model = FavoriteCatModel.fromEntity(favoriteCat);
@@ -69,6 +102,19 @@ class FavoriteRepositoryImpl implements FavoriteRepository {
       return const Right(unit);
     } catch (e) {
       return Left(Exception('Failed to clear favorites: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<Either<Exception, FavoriteCat?>> getFavoriteById(String catId) async {
+    try {
+      final model = await localDataSource.getFavoriteById(catId);
+      if (model != null) {
+        return Right(model.toEntity());
+      }
+      return const Right(null);
+    } catch (e) {
+      return Left(Exception('Failed to get favorite by id: ${e.toString()}'));
     }
   }
 }

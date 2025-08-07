@@ -9,8 +9,8 @@ class ApiConstants {
 
   // API Parameters - Default Values
   static const int defaultPage = 0;
-  static const int defaultLimit = 100;
-  static const int maxLimit = 100;
+  static const int defaultLimit = 20;
+  static const int maxLimit = 20;
   static const int minLimit = 1;
 
   // Image Parameters
@@ -20,7 +20,7 @@ class ApiConstants {
   static const bool hasBreeds = true;
   static const String order = 'RANDOM';
 
-  // API Key (ในโปรเจค Production ควรเก็บใน Environment Variables)
+  // API Key
   static const String apiKey = 'live_IYRCyeyGLPjd48Jgsk45Aak1mYnqT5LOAS0cAYBXR2iCIaEu0XNVxG3wfhEqgtY9';
 }
 
