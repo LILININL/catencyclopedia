@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/favorite_cat.dart';
 import '../../../domain/usecases/favorite/add_favorite.dart';
+import '../../../domain/usecases/favorite/add_favorite_with_breed_data.dart';
 import '../../../domain/usecases/favorite/remove_favorite.dart';
 import '../../../domain/usecases/favorite/get_favorites.dart';
 import '../../../domain/usecases/favorite/is_favorite.dart';
@@ -11,16 +12,25 @@ import 'favorite_state.dart';
 
 class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
   final AddFavorite addFavorite;
+  final AddFavoriteWithBreedData addFavoriteWithBreedData;
   final RemoveFavorite removeFavorite;
   final GetFavorites getFavorites;
   final IsFavorite isFavorite;
   final update_use_case.UpdateFavorite updateFavorite;
   final ClearFavorites clearFavorites;
 
-  FavoriteBloc({required this.addFavorite, required this.removeFavorite, required this.getFavorites, required this.isFavorite, required this.updateFavorite, required this.clearFavorites})
-    : super(const FavoriteState()) {
+  FavoriteBloc({
+    required this.addFavorite,
+    required this.addFavoriteWithBreedData,
+    required this.removeFavorite,
+    required this.getFavorites,
+    required this.isFavorite,
+    required this.updateFavorite,
+    required this.clearFavorites,
+  }) : super(const FavoriteState()) {
     on<LoadFavorites>(_onLoadFavorites);
     on<AddToFavorites>(_onAddToFavorites);
+    on<AddToFavoritesWithBreedData>(_onAddToFavoritesWithBreedData);
     on<RemoveFromFavorites>(_onRemoveFromFavorites);
     on<CheckIsFavorite>(_onCheckIsFavorite);
     on<UpdateFavorite>(_onUpdateFavorite);
@@ -47,6 +57,44 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
     result.fold((failure) => emit(state.copyWith(error: failure.toString())), (_) {
       // อัพเดท state
       final newFavorites = List<FavoriteCat>.from(state.favorites)..add(event.favoriteCat);
+      final newState = state.copyWith(favorites: newFavorites);
+      final updatedState = newState.updateFavoriteStatus(event.favoriteCat.id, true);
+      emit(updatedState);
+    });
+  }
+
+  Future<void> _onAddToFavoritesWithBreedData(AddToFavoritesWithBreedData event, Emitter<FavoriteState> emit) async {
+    final params = AddFavoriteWithBreedDataParams(
+      favoriteCat: event.favoriteCat,
+      breedDescription: event.breedDescription,
+      origin: event.origin,
+      temperament: event.temperament,
+      lifeSpan: event.lifeSpan,
+      weight: event.weight,
+      energyLevel: event.energyLevel,
+      sheddingLevel: event.sheddingLevel,
+      socialNeeds: event.socialNeeds,
+      additionalData: event.additionalData,
+    );
+
+    final result = await addFavoriteWithBreedData(params);
+    result.fold((failure) => emit(state.copyWith(error: failure.toString())), (_) {
+      // สร้าง FavoriteCat entity ที่มีข้อมูลครบถ้วน
+      final enrichedFavoriteCat = event.favoriteCat.copyWith(
+        breedDescription: event.breedDescription,
+        origin: event.origin,
+        temperament: event.temperament,
+        lifeSpan: event.lifeSpan,
+        weight: event.weight,
+        energyLevel: event.energyLevel,
+        sheddingLevel: event.sheddingLevel,
+        socialNeeds: event.socialNeeds,
+        additionalData: event.additionalData,
+        isFullyLoaded: true,
+      );
+
+      // อัพเดท state
+      final newFavorites = List<FavoriteCat>.from(state.favorites)..add(enrichedFavoriteCat);
       final newState = state.copyWith(favorites: newFavorites);
       final updatedState = newState.updateFavoriteStatus(event.favoriteCat.id, true);
       emit(updatedState);

@@ -63,7 +63,7 @@ class FavoriteCard extends StatelessWidget {
                     top: 8,
                     right: 8,
                     child: GestureDetector(
-                      onTap: onRemove,
+                      onTap: () => _showRemoveDialog(context),
                       child: Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
@@ -90,7 +90,7 @@ class FavoriteCard extends StatelessWidget {
             ),
             // Info Section
             Expanded(
-              flex: 1,
+              flex: 2,
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: Column(
@@ -108,6 +108,82 @@ class FavoriteCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 2),
+                    
+                    // แสดงข้อมูลเพิ่มเติมถ้ามี (แค่ 1 อย่าง)
+                    if (favorite.origin != null) ...[
+                      Row(
+                        children: [
+                          Icon(Icons.location_on, color: catOrange, size: 10),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              favorite.origin!,
+                              style: TextStyle(
+                                color: catBrown.withOpacity(0.8),
+                                fontSize: 10,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ] else if (favorite.temperament != null) ...[
+                      Row(
+                        children: [
+                          Icon(Icons.pets, color: catOrange, size: 10),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              favorite.temperament!.split(',').first.trim(),
+                              style: TextStyle(
+                                color: catBrown.withOpacity(0.8),
+                                fontSize: 10,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                    
+                    const SizedBox(height: 2),
+                    
+                    // แสดงสถานะข้อมูล
+                    Row(
+                      children: [
+                        Icon(
+                          favorite.isFullyLoaded 
+                            ? Icons.cloud_done 
+                            : Icons.cloud_download,
+                          color: favorite.isFullyLoaded 
+                            ? Colors.green 
+                            : catOrange,
+                          size: 10,
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            favorite.isFullyLoaded 
+                              ? 'ข้อมูลครบถ้วน' 
+                              : 'ข้อมูลพื้นฐาน',
+                            style: TextStyle(
+                              color: favorite.isFullyLoaded 
+                                ? Colors.green 
+                                : catOrange,
+                              fontSize: 9,
+                              fontStyle: FontStyle.italic,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    
+                    const Spacer(),
+                    
                     Row(
                       children: [
                         Icon(Icons.schedule, color: catOrange, size: 10),
@@ -131,6 +207,39 @@ class FavoriteCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showRemoveDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.warning, color: catOrange),
+            const SizedBox(width: 8),
+            const Text('ยืนยันการลบ'),
+          ],
+        ),
+        content: Text('คุณต้องการลบ "${favorite.breedName}" จากรายการโปรดใช่หรือไม่?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text('ยกเลิก', style: TextStyle(color: catBrown)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              onRemove();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('ลบ'),
+          ),
+        ],
       ),
     );
   }

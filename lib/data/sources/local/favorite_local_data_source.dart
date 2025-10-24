@@ -9,6 +9,7 @@ abstract class FavoriteLocalDataSource {
   Future<void> updateFavorite(FavoriteCatModel favorite);
   Future<void> removeFavorite(String catId);
   Future<List<FavoriteCatModel>> getFavorites();
+  Future<FavoriteCatModel?> getFavoriteById(String catId);
   Future<bool> isFavorite(String catId);
   Future<void> clearFavorites();
   Future<String?> downloadAndSaveImage(String imageUrl, String catId);
@@ -75,6 +76,11 @@ class FavoriteLocalDataSourceImpl implements FavoriteLocalDataSource {
   }
 
   @override
+  Future<FavoriteCatModel?> getFavoriteById(String catId) async {
+    return await _getFavoriteById(catId);
+  }
+
+  @override
   Future<bool> isFavorite(String catId) async {
     return hiveBox.containsKey(catId);
   }
@@ -111,7 +117,7 @@ class FavoriteLocalDataSourceImpl implements FavoriteLocalDataSource {
         await directory.create(recursive: true);
       }
 
-      final String filePath = '$favoritesDir/${catId}.jpg';
+      final String filePath = '$favoritesDir/$catId.jpg';
       final File file = File(filePath);
       await file.writeAsBytes(response.data);
 

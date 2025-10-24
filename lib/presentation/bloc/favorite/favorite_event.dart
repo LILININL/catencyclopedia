@@ -21,6 +21,47 @@ class AddToFavorites extends FavoriteEvent {
   List<Object?> get props => [favoriteCat];
 }
 
+/// เพิ่มแมวเข้ารายการโปรดพร้อมข้อมูลครบถ้วน (สำหรับออฟไลน์)
+class AddToFavoritesWithBreedData extends FavoriteEvent {
+  final FavoriteCat favoriteCat;
+  final String? breedDescription;
+  final String? origin;
+  final String? temperament;
+  final String? lifeSpan;
+  final String? weight;
+  final int? energyLevel;
+  final int? sheddingLevel;
+  final int? socialNeeds;
+  final Map<String, dynamic>? additionalData;
+
+  const AddToFavoritesWithBreedData({
+    required this.favoriteCat,
+    this.breedDescription,
+    this.origin,
+    this.temperament,
+    this.lifeSpan,
+    this.weight,
+    this.energyLevel,
+    this.sheddingLevel,
+    this.socialNeeds,
+    this.additionalData,
+  });
+
+  @override
+  List<Object?> get props => [
+    favoriteCat,
+    breedDescription,
+    origin,
+    temperament,
+    lifeSpan,
+    weight,
+    energyLevel,
+    sheddingLevel,
+    socialNeeds,
+    additionalData,
+  ];
+}
+
 /// ลบแมวออกจากรายการโปรด
 class RemoveFromFavorites extends FavoriteEvent {
   final String catId;
